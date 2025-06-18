@@ -24,17 +24,28 @@ function App() {
     const newSocket = io(import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000');
     setSocket(newSocket);
 
-    // Check if student name exists in session storage
-    const savedStudentName = sessionStorage.getItem('studentName');
-    if (savedStudentName) {
-      setStudentName(savedStudentName);
+    const savedUserRole = sessionStorage.getItem("userRole")
+    const savedStudentName = sessionStorage.getItem("studentName")
+
+    if (savedUserRole) {
+      setUserRole(savedUserRole)
+      if (savedUserRole === "student" && savedStudentName) {
+        setStudentName(savedStudentName)
+        // Rejoin as student if we have the name
+        if (newSocket) {
+          newSocket.emit("join-as-student", savedStudentName)
+        }
+      } else if (savedUserRole === "teacher") {
+        // Rejoin as teacher
+        if (newSocket) {
+          newSocket.emit("join-as-teacher")
+        }
+      }
     }
 
     return () => {
-      if (newSocket) {
-        newSocket.disconnect();
-      }
-    };
+      newSocket.disconnect()
+    }
   }, []);
 
   const handleRoleSelection = (role) => {
@@ -50,6 +61,7 @@ function App() {
     setUserRole(null);
     setStudentName('');
     sessionStorage.removeItem('studentName');
+    sessionStorage.removeItem('userRole');
     if (socket) {
       socket.disconnect();
       const newSocket = io(import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000');
@@ -72,8 +84,8 @@ function App() {
   return (
     <SocketProvider socket={socket}>
       <Router>
-        <div className="App min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-100">
-          <Toaster 
+        <div className="App min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-100 w-[100vw]">
+          <Toaster
             position="top-right"
             toastOptions={{
               duration: 4000,
@@ -102,10 +114,10 @@ function App() {
               },
             }}
           />
-          
+
           <Routes>
-            <Route 
-              path="/" 
+            <Route
+              path="/"
               element={
                 userRole ? (
                   userRole === 'teacher' ? (
@@ -114,34 +126,34 @@ function App() {
                     <Navigate to="/student" replace />
                   )
                 ) : (
-                  <Home 
-                    onRoleSelect={handleRoleSelection} 
+                  <Home
+                    onRoleSelect={handleRoleSelection}
                     onStudentNameSet={handleStudentNameSet}
                     existingStudentName={studentName}
                   />
                 )
-              } 
+              }
             />
-            
-            <Route 
-              path="/teacher" 
+
+            <Route
+              path="/teacher"
               element={
                 userRole === 'teacher' ? (
-                  <TeacherDashboard 
+                  <TeacherDashboard
                     onLogout={handleLogout}
                     onToggleChat={() => setShowChat(!showChat)}
                   />
                 ) : (
                   <Navigate to="/" replace />
                 )
-              } 
+              }
             />
-            
-            <Route 
-              path="/student" 
+
+            <Route
+              path="/student"
               element={
                 userRole === 'student' && studentName ? (
-                  <StudentDashboard 
+                  <StudentDashboard
                     studentName={studentName}
                     onLogout={handleLogout}
                     onToggleChat={() => setShowChat(!showChat)}
@@ -149,15 +161,15 @@ function App() {
                 ) : (
                   <Navigate to="/" replace />
                 )
-              } 
+              }
             />
-            
+
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
 
           {/* Chat Popup */}
           {(userRole === 'teacher' || userRole === 'student') && (
-            <ChatPopup 
+            <ChatPopup
               isOpen={showChat}
               onClose={() => setShowChat(false)}
               userRole={userRole}
@@ -173,14 +185,14 @@ function App() {
               title="Toggle Chat"
             >
               <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path 
-                  strokeLinecap="round" 
-                  strokeLinejoin="round" 
-                  strokeWidth={2} 
-                  d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" 
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
                 />
               </svg>
-              
+
               {/* Tooltip for larger screens */}
               <span className="absolute bottom-full right-0 mb-2 px-3 py-1 text-xs font-medium text-white bg-gray-900 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap hidden sm:block">
                 {showChat ? 'Close Chat' : 'Open Chat'}

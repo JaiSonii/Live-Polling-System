@@ -70,8 +70,12 @@
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 /* Gradient backgrounds */
@@ -152,19 +156,121 @@
   transition: opacity 300ms, transform 300ms;
 }
 
-/* Mobile responsiveness */
+/* Desktop-specific improvements */
+@media (min-width: 1024px) {
+  .container {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+
+  /* Better spacing for desktop cards */
+  .desktop-card {
+    padding: 2rem;
+    margin: 1rem;
+  }
+
+  /* Improved typography for desktop */
+  .desktop-text {
+    font-size: 1.125rem;
+    line-height: 1.75rem;
+  }
+
+  /* Better button sizing for desktop */
+  .desktop-button {
+    padding: 1rem 2rem;
+    font-size: 1.125rem;
+  }
+
+  /* Enhanced shadows for desktop */
+  .desktop-shadow {
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  }
+}
+
+/* Extra large screens */
+@media (min-width: 1280px) {
+  .container {
+    padding-left: 3rem;
+    padding-right: 3rem;
+  }
+
+  /* Even better spacing for XL screens */
+  .xl-spacing {
+    margin: 2rem;
+    padding: 3rem;
+  }
+
+  /* Better typography scaling */
+  .xl-text {
+    font-size: 1.25rem;
+    line-height: 1.875rem;
+  }
+}
+
+/* 2XL screens and beyond */
+@media (min-width: 1536px) {
+  .container {
+    padding-left: 4rem;
+    padding-right: 4rem;
+  }
+
+  /* Maximum spacing for very large screens */
+  .xxl-spacing {
+    margin: 3rem;
+    padding: 4rem;
+  }
+
+  /* Optimal typography for large displays */
+  .xxl-text {
+    font-size: 1.5rem;
+    line-height: 2rem;
+  }
+}
+
+/* Mobile responsiveness improvements */
 @media (max-width: 640px) {
   .container {
     padding-left: 1rem;
     padding-right: 1rem;
   }
-  
+
   .text-responsive {
     font-size: 0.875rem;
   }
-  
+
   .card-mobile {
     margin: 0.5rem;
     border-radius: 1rem;
+    padding: 1rem;
+  }
+
+  /* Smaller buttons on mobile */
+  .mobile-button {
+    padding: 0.75rem 1rem;
+    font-size: 0.875rem;
+  }
+}
+
+/* Improved focus states for accessibility */
+@media (min-width: 1024px) {
+  button:focus-visible,
+  input:focus-visible,
+  textarea:focus-visible,
+  select:focus-visible {
+    outline: 2px solid #6366f1;
+    outline-offset: 2px;
+  }
+}
+
+/* Better hover states for desktop */
+@media (hover: hover) {
+  .hover-lift:hover {
+    transform: translateY(-2px);
+    transition: transform 0.2s ease-in-out;
+  }
+
+  .hover-scale:hover {
+    transform: scale(1.02);
+    transition: transform 0.2s ease-in-out;
   }
 }
